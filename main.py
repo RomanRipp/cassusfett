@@ -1,7 +1,12 @@
 import RPi.GPIO as GPIO
 from tracks import Tracks
 from sonar import Sonar
+import time
+import logging
 
+logging.basicConfig(level=logging.DEBUG)
+
+GPIO.setmode(GPIO.BCM)
 
 tracks = Tracks(power_right=18,
                 forward_right=2,
@@ -15,16 +20,17 @@ sonar.start()
 
 while True:
 
-    print("distance: " + sonar.get_distance())
+    logging.debug("distance: {0}".format(sonar.get_distance()[0]))
 
-    key = input()
-    if key == 'w':
-        tracks.forward()
-    elif key == 's':
-        tracks.backward()
-    elif key == 'd':
-        tracks.right()
-    elif key == 'a':
-        tracks.left()
-    else:
-        tracks.stop()
+    time.sleep(1)
+    # key = input()
+    # if key == 'w':
+    #     tracks.forward()
+    # elif key == 's':
+    #     tracks.backward()
+    # elif key == 'd':
+    #     tracks.right()
+    # elif key == 'a':
+    #     tracks.left()
+    # else:
+    #     tracks.stop()

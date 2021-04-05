@@ -1,36 +1,46 @@
 import RPi.GPIO as GPIO
 from tracks import Tracks
 from sonar import Sonar
-import time
+from light import Light
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
 GPIO.setmode(GPIO.BCM)
 
-tracks = Tracks(power_right=18,
-                forward_right=2,
-                backward_right=3,
-                power_left=19,
-                forward_left=4,
-                backward_left=5)
+tracks = Tracks(power_left=18,
+                forward_left=2,
+                backward_left=3,
+                power_right=19,
+                forward_right=4,
+                backward_right=5)
 
 sonar = Sonar(trigger=14, echo=15)
 sonar.start()
 
+light = Light(pin=17)
+light.start()
+
 while True:
 
-    logging.debug("distance: {0}".format(sonar.get_distance()[0]))
+    logging.debug("D: {0}".format(sonar.get_distance()[0]))
 
-    time.sleep(1)
-    # key = input()
-    # if key == 'w':
-    #     tracks.forward()
-    # elif key == 's':
-    #     tracks.backward()
-    # elif key == 'd':
-    #     tracks.right()
-    # elif key == 'a':
-    #     tracks.left()
-    # else:
-    #     tracks.stop()
+    key = input()
+    logging.debug("C: {0}".format(key))
+
+    if key == "w":
+        tracks.forward()
+    elif key == "s":
+        tracks.backward()
+    elif key == "d":
+        tracks.right()
+    elif key == "a":
+        tracks.left()
+    elif key == "q":
+        tracks.stop()
+    elif key == "e":
+        break
+
+tracks.stop()
+sonar.stop()
+light.stop()

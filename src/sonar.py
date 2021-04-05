@@ -13,10 +13,9 @@ class Sonar:
         self._running = False
         GPIO.setup(self._trigger_pin, GPIO.OUT)
         GPIO.setup(self._echo_pin, GPIO.IN)
-        self._thread = Thread(target=self._running)
+        self._thread = Thread(target=self._run)
 
     def _read_sensor(self):
-        logging.debug("measuring distance")
         GPIO.output(self._trigger_pin, False)
         time.sleep(1)
         GPIO.output(self._trigger_pin, True)
@@ -38,10 +37,12 @@ class Sonar:
     def start(self):
         self._running = True
         self._thread.start()
+        logging.info("distance sensor started")
 
     def stop(self):
         self._running = False
         self._thread.join()
+        logging.info("distance sensor stopped")
 
     def get_distance(self):
         return self.distance, self.timestamp

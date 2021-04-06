@@ -2,17 +2,17 @@ import logging
 import time
 import random
 
+NORMAL_DISTANCE = 100
 OBSTACLE = "obstacle"
 DROP = "drop"
 NORMAL = "normal"
 
 
 def solve_distance(dist):
-    normal = 100
     delta = 10
-    err = normal - dist
+    err = NORMAL_DISTANCE - dist
     if abs(err) > delta:
-        if dist < normal:
+        if dist < NORMAL_DISTANCE:
             return OBSTACLE
         else:
             return DROP
@@ -27,24 +27,29 @@ class WalkState:
     def handle_light_change(self, light):
         if light:
             self._tracks.stop()
-            logging.debug("found light!")
+            logging.info("light -> rest")
             return RestState(self._tracks)
         return self
 
     def _try_avoid_obstacle(self):
-        logging.debug("avoiding obstacle")
         self._tracks.backward()
         time.sleep(0.5)
+        self._tracks.stop()
+        time.sleep(1)
         if bool(random.getrandbits(1)):
             self._tracks.right()
         else:
             self._tracks.left()
         time.sleep(random.uniform(1, 3))
+        self._tracks.stop()
+        time.sleep(2)
         self._tracks.forward()
 
     def handle_distance_change(self, dist):
         switch = solve_distance(dist)
+        logging.info("{0}({1}): {2}".format(switch, NORMAL_DISTANCE, dist))
         if switch == DROP or switch == OBSTACLE:
+            logging.info("obstacle -> avoid")
             self._try_avoid_obstacle()
             return self
         return self
@@ -57,6 +62,7 @@ class RestState:
     def handle_light_change(self, light):
         if not light:
             self._tracks.forward()
+            logging.info("no light -> walk")
             return WalkState(self._tracks)
         return self
 

@@ -28,35 +28,35 @@ class Tracks:
         GPIO.PWM(power_pin, 1000).start(25)
 
     def forward(self):
-        logging.debug("forward")
+        logging.info("forward")
         GPIO.output(self._brp, GPIO.LOW)
         GPIO.output(self._blp, GPIO.LOW)
         GPIO.output(self._frp, GPIO.HIGH)
         GPIO.output(self._flp, GPIO.HIGH)
 
     def backward(self):
-        logging.debug("backward")
+        logging.info("backward")
         GPIO.output(self._frp, GPIO.LOW)
         GPIO.output(self._flp, GPIO.LOW)
         GPIO.output(self._brp, GPIO.HIGH)
         GPIO.output(self._blp, GPIO.HIGH)
 
     def stop(self):
-        logging.debug("stop")
+        logging.info("stop")
         GPIO.output(self._frp, GPIO.LOW)
         GPIO.output(self._flp, GPIO.LOW)
         GPIO.output(self._brp, GPIO.LOW)
         GPIO.output(self._blp, GPIO.LOW)
 
     def left(self):
-        logging.debug("left")
+        logging.info("left")
         GPIO.output(self._flp, GPIO.LOW)
         GPIO.output(self._brp, GPIO.LOW)
         GPIO.output(self._blp, GPIO.LOW)
         GPIO.output(self._frp, GPIO.HIGH)
 
     def right(self):
-        logging.debug("right")
+        logging.info("right")
         GPIO.output(self._frp, GPIO.LOW)
         GPIO.output(self._brp, GPIO.LOW)
         GPIO.output(self._blp, GPIO.LOW)

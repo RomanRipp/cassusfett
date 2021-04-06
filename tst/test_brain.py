@@ -1,6 +1,6 @@
 from unittest import TestCase
 from unittest.mock import Mock
-from brain import Brain, WalkState, RestState
+from brain import Brain, WalkState, RestState, solve_distance, OBSTACLE, DROP, NORMAL
 
 
 class TestBrain(TestCase):
@@ -87,6 +87,13 @@ class TestBrain(TestCase):
         mock_tracks.assert_not_called()
         self.assertIsInstance(brain._current_state, WalkState)
 
+    def test_distance(self):
+        res = solve_distance(42)
+        self.assertEqual(res, OBSTACLE)
+        res = solve_distance(142)
+        self.assertEqual(res, DROP)
+        res = solve_distance(101)
+        self.assertEqual(res, NORMAL)
 
 
 

@@ -1,16 +1,16 @@
 import RPi.GPIO as GPIO
+from sensor import Sensor
 from threading import Thread
 import time
 import logging
 
 
-class Sonar: 
+class Sonar(Sensor):
     def __init__(self, trigger, echo):
-        self.distance = 0
-        self.timestamp = time.time()
+        Sensor.__init__(self)
+        self._distance = 0
         self._trigger_pin = trigger
         self._echo_pin = echo
-        self._running = False
         GPIO.setup(self._trigger_pin, GPIO.OUT)
         GPIO.setup(self._echo_pin, GPIO.IN)
         self._thread = Thread(target=self._run)
@@ -26,25 +26,15 @@ class Sonar:
         while GPIO.input(self._echo_pin) == 1:
             pulse_end = time.time()
         pulse_duration = pulse_end - pulse_start
-        self.distance = round(pulse_duration * 171500, 2)
-        self.timestamp = time.time()
-        logging.debug("distance: {0}".format(self.distance))
+        self._distance = round(pulse_duration * 171500, 2)
+        self._timestamp = time.time()
+        logging.debug("distance: {0}".format(self._distance))
 
     def _run(self):
         while self._running:
             self._read_sensor()
-
-    def start(self):
-        self._running = True
-        self._thread.start()
-        logging.info("distance sensor started")
-
-    def stop(self):
-        self._running = False
-        self._thread.join()
-        logging.info("distance sensor stopped")
+            for s in self._subscribers:
+                s.on_distance_change(self._distance)
 
     def get_distance(self):
-        return self.distance, self.timestamp
-
-
+        return self._distance, self._timestamp

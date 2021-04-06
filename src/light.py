@@ -1,16 +1,16 @@
 import RPi.GPIO as GPIO
+from sensor import Sensor
 from threading import Thread
 import time
 import logging
 
 
-class Light:
+class Light(Sensor):
     def __init__(self, pin, sleep=1):
+        Sensor.__init__(self)
         self._sleep = sleep
         self._pin = pin
-        self._running = False
         self._light = False
-        self._timestamp = time.time()
         GPIO.setup(self._pin, GPIO.IN)
         self._thread = Thread(target=self._run)
 
@@ -20,16 +20,8 @@ class Light:
             self._timestamp = time.time()
             logging.debug("light: {}".format(self._light))
             time.sleep(self._sleep)
-
-    def start(self):
-        self._running = True
-        self._thread.start()
-        logging.info("light sensor started")
-
-    def stop(self):
-        self._running = False
-        self._thread.join()
-        logging.info("light sensor stopped")
+            for s in self._subscribers:
+                s.on_light_change(self._light)
 
     def get_light(self):
         return self._light, self._timestamp

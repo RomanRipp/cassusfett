@@ -2,45 +2,46 @@ import RPi.GPIO as GPIO
 from tracks import Tracks
 from sonar import Sonar
 from light import Light
+from brain import Brain, ZombieBrain
 import logging
+import sys
 
-logging.basicConfig(level=logging.DEBUG)
 
-GPIO.setmode(GPIO.BCM)
+def main():
+    logging.basicConfig(level=logging.INFO)
 
-tracks = Tracks(power_left=18,
-                forward_left=2,
-                backward_left=3,
-                power_right=19,
-                forward_right=4,
-                backward_right=5)
+    GPIO.setmode(GPIO.BCM)
 
-sonar = Sonar(trigger=14, echo=15)
-sonar.start()
+    tracks = Tracks(power_left=18,
+                    forward_left=2,
+                    backward_left=3,
+                    power_right=19,
+                    forward_right=4,
+                    backward_right=5)
+    sonar = Sonar(trigger=14, echo=15)
+    light = Light(pin=17)
 
-light = Light(pin=17)
-light.start()
+    zombie_mode = False
+    args = sys.argv[1:]
+    if len(args) > 0:
+        args[0] == "--zombie"
+        zombie_mode = True
+        logging.info("Zombie mode enabled: w - forward, s - backward, a - left, b - right")
+    else:
+        logging.info("Autonomous mode enabled: e - exit")
 
-while True:
+    brain = ZombieBrain(tracks, sonar, light) if zombie_mode else Brain(tracks, sonar, light)
 
-    logging.debug("D: {0}".format(sonar.get_distance()[0]))
+    brain.run()
+    while True:
+        key = input()
+        if zombie_mode:
+            brain.on_command(key)
+        if key == "e":
+            break
+    brain.die()
+    GPIO.cleanup()
 
-    key = input()
-    logging.debug("C: {0}".format(key))
 
-    if key == "w":
-        tracks.forward()
-    elif key == "s":
-        tracks.backward()
-    elif key == "d":
-        tracks.right()
-    elif key == "a":
-        tracks.left()
-    elif key == "q":
-        tracks.stop()
-    elif key == "e":
-        break
-
-tracks.stop()
-sonar.stop()
-light.stop()
+if __name__ == "__main__":
+    main()

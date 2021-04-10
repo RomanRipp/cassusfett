@@ -3,9 +3,14 @@ import time
 import random
 
 NORMAL_DISTANCE = 100
+DELTA_DISTANCE = NORMAL_DISTANCE * 0.2
 OBSTACLE = "obstacle"
 DROP = "drop"
 NORMAL = "normal"
+
+
+def solve_obstacle(dist):
+    return NORMAL if dist > NORMAL_DISTANCE else OBSTACLE
 
 
 def solve_distance(dist):
@@ -46,7 +51,7 @@ class WalkState:
         self._tracks.forward()
 
     def handle_distance_change(self, dist):
-        switch = solve_distance(dist)
+        switch = solve_obstacle(dist)
         logging.info("{0}({1}): {2}".format(switch, NORMAL_DISTANCE, dist))
         if switch == DROP or switch == OBSTACLE:
             logging.info("obstacle -> avoid")

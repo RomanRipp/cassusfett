@@ -70,14 +70,15 @@ class TestBrain(TestCase):
         mock_tracks.forward.assert_called_once()
         self.assertIsInstance(brain._current_state, WalkState)
 
-    def test_walk_drop(self):
-        mock_tracks = Mock()
-        brain = Brain(mock_tracks, Mock(), Mock())
-        brain._current_state = WalkState(mock_tracks)
-        brain.on_distance_change(142.0)
-        mock_tracks.backward.assert_called_once()
-        mock_tracks.forward.assert_called_once()
-        self.assertIsInstance(brain._current_state, WalkState)
+    # TODO separate sensor is needed for that
+    # def test_walk_drop(self):
+    #     mock_tracks = Mock()
+    #     brain = Brain(mock_tracks, Mock(), Mock())
+    #     brain._current_state = WalkState(mock_tracks)
+    #     brain.on_distance_change(142.0)
+    #     mock_tracks.backward.assert_called_once()
+    #     mock_tracks.forward.assert_called_once()
+    #     self.assertIsInstance(brain._current_state, WalkState)
 
     def test_walk_normal(self):
         mock_tracks = Mock()

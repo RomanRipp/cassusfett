@@ -7,9 +7,14 @@ import logging
 import sys
 
 
-def main():
-    logging.basicConfig(level=logging.INFO)
+def parse_flags():
+    args = sys.argv[1:]
+    zombie_mode = "--zombie" in args
+    debug_mode = "--debug" in args
+    return zombie_mode, debug_mode
 
+
+def main():
     GPIO.setmode(GPIO.BCM)
 
     tracks = Tracks(power_left=18,
@@ -21,16 +26,19 @@ def main():
     sonar = Sonar(trigger=14, echo=15)
     light = Light(pin=17)
 
-    zombie_mode = False
-    args = sys.argv[1:]
-    if len(args) > 0:
-        args[0] == "--zombie"
-        zombie_mode = True
+    zombie_mode, debug_mode = parse_flags()
+    if debug_mode:
+        logging.basicConfig(level=logging.DEBUG)
+        logging.info("Debug mode enabled")
+    else:
+        logging.basicConfig(level=logging.INFO)
+
+    if zombie_mode:
         logging.info("Zombie mode enabled: w - forward, s - backward, a - left, b - right")
+        brain = ZombieBrain(tracks, sonar, light)
     else:
         logging.info("Autonomous mode enabled: e - exit")
-
-    brain = ZombieBrain(tracks, sonar, light) if zombie_mode else Brain(tracks, sonar, light)
+        brain = Brain(tracks, sonar, light)
 
     brain.run()
     while True:

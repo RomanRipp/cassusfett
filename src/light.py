@@ -19,9 +19,9 @@ class Light(Sensor):
             self._light = (GPIO.input(self._pin) == 0)
             self._timestamp = time.time()
             logging.debug("light: {}".format(self._light))
-            time.sleep(self._sleep)
             for s in self._subscribers:
                 s.on_light_change(self._light)
+            time.sleep(self._sleep)
 
     def get_light(self):
         return self._light, self._timestamp

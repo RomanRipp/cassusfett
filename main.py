@@ -2,6 +2,7 @@ import RPi.GPIO as GPIO
 from tracks import Tracks
 from sonar import Sonar
 from light import Light
+from temperature import TemperatureHumidity
 from brain import Brain, ZombieBrain
 import logging
 import sys
@@ -25,6 +26,7 @@ def main():
                     backward_right=5)
     sonar = Sonar(trigger=14, echo=15)
     light = Light(pin=17)
+    ths = TemperatureHumidity(pin=27)
 
     zombie_mode, debug_mode = parse_flags()
     if debug_mode:
@@ -35,10 +37,10 @@ def main():
 
     if zombie_mode:
         logging.info("Zombie mode enabled: w - forward, s - backward, a - left, b - right")
-        brain = ZombieBrain(tracks, sonar, light)
+        brain = ZombieBrain(tracks, sonar, light, ths)
     else:
         logging.info("Autonomous mode enabled: e - exit")
-        brain = Brain(tracks, sonar, light)
+        brain = Brain(tracks, sonar, light, ths)
 
     brain.run()
     while True:

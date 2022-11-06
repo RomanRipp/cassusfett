@@ -88,16 +88,18 @@ class RestState(Stub):
 
 
 class Brain:
-    def __init__(self, tracks, sonar, light):
+    def __init__(self, tracks, sonar, light, ths):
         self._current_state = RestState(tracks)
         self._tracks = tracks
         self._sonar = sonar
         self._light = light
+        self._ths = ths
 
     def run(self):
         self._tracks.stop()
         self._sonar.start()
         self._light.start()
+        self._ths.start()
         self._sonar.subscribe(self)
         self._light.subscribe(self)
 
@@ -107,6 +109,7 @@ class Brain:
         self._light.unsubscribe(self)
         self._sonar.stop()
         self._light.stop()
+        self._ths.stop()
 
     def on_light_change(self, light):
         self._current_state = self._current_state.handle_light_change(light)
@@ -119,10 +122,11 @@ class Brain:
 
 
 class ZombieBrain:
-    def __init__(self, tracks, sonar, light):
+    def __init__(self, tracks, sonar, light, ths):
         self._tracks = tracks
         self._sonar = sonar
         self._light = light
+        self._ths = ths
 
     def on_command(self, cmd):
         if cmd == "w":
@@ -140,8 +144,10 @@ class ZombieBrain:
         self._tracks.stop()
         self._sonar.start()
         self._light.start()
+        self._ths.start()
 
     def die(self):
         self._tracks.stop()
         self._sonar.stop()
         self._light.stop()
+        self._ths.stop()

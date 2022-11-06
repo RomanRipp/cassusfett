@@ -16,6 +16,7 @@ class TemperatureHumidity(Sensor):
         self._thread = Thread(target=self._run)
 
     def _run(self):
+        logging.debug("ths started")
         reader = DHT11(pin=self._pin)
         while self._running:
             res = reader.read()

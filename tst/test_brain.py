@@ -1,6 +1,6 @@
 from unittest import TestCase
 from unittest.mock import Mock
-from brain import Brain, WalkState, RestState, solve_distance, OBSTACLE, DROP, NORMAL
+from brain import Brain, WalkState, RestState, solve_distance, OBSTACLE, DROP, NORMAL, NORMAL_DISTANCE
 
 
 class TestBrain(TestCase):
@@ -89,11 +89,11 @@ class TestBrain(TestCase):
         self.assertIsInstance(brain._current_state, WalkState)
 
     def test_distance(self):
-        res = solve_distance(42)
+        res = solve_distance(NORMAL_DISTANCE - 42)
         self.assertEqual(res, OBSTACLE)
-        res = solve_distance(142)
+        res = solve_distance(NORMAL_DISTANCE + 42)
         self.assertEqual(res, DROP)
-        res = solve_distance(101)
+        res = solve_distance(NORMAL_DISTANCE + 1)
         self.assertEqual(res, NORMAL)
 
 

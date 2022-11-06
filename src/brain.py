@@ -2,7 +2,7 @@ import logging
 import time
 import random
 
-NORMAL_DISTANCE = 100
+NORMAL_DISTANCE = 200
 DELTA_DISTANCE = NORMAL_DISTANCE * 0.2
 OBSTACLE = "obstacle"
 DROP = "drop"
@@ -25,7 +25,18 @@ def solve_distance(dist):
         return NORMAL
 
 
-class WalkState:
+class Stub:
+    def handle_light_change(self, light):
+        pass
+
+    def handle_distance_change(self, dist):
+        pass
+
+    def handle_pulse(self, duration):
+        pass
+
+
+class WalkState(Stub):
     def __init__(self, tracks):
         self._tracks = tracks
 
@@ -60,7 +71,7 @@ class WalkState:
         return self
 
 
-class RestState:
+class RestState(Stub):
     def __init__(self, tracks):
         self._tracks = tracks
 
@@ -102,6 +113,9 @@ class Brain:
 
     def on_distance_change(self, dist):
         self._current_state = self._current_state.handle_distance_change(dist)
+
+    def on_pulse(self, value):
+        self._current_state = self._current_state.handle_pulse(value)
 
 
 class ZombieBrain:

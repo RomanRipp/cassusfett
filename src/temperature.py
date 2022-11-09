@@ -20,14 +20,14 @@ class TemperatureHumidity(Sensor):
         reader = DHT11(pin=self._pin)
         while self._running:
             res = reader.read()
-            if not res.is_valid():
-                logging.error("failed to read temperature and humidity code:", res.error_code)
-                continue
-            self._temperature = res.temperature
-            self._humidity = res.humidity
-            logging.debug("temperature: {}, humidity: {}".format(self._temperature, self._humidity))
-            for s in self._subscribers:
-                s.on_temperature_humidity_change(self._temperature, self._humidity)
+            if res.is_valid():
+                self._temperature = res.temperature
+                self._humidity = res.humidity
+                logging.debug("temperature: {}, humidity: {}".format(self._temperature, self._humidity))
+                for s in self._subscribers:
+                    s.on_temperature_humidity_change(self._temperature, self._humidity)
+            else:
+                logging.error("failed to read temperature and humidity code: {code}".format(code=res.error_code))
             time.sleep(self._sleep)
 
 

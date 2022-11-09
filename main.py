@@ -4,6 +4,7 @@ from sonar import Sonar
 from light import Light
 from temperature import TemperatureHumidity
 from brain import Brain, ZombieBrain
+from metrics import Monitoring
 import logging
 import sys
 
@@ -26,7 +27,7 @@ def main():
                     backward_right=5)
     sonar = Sonar(trigger=14, echo=15)
     light = Light(pin=17)
-    ths = TemperatureHumidity(pin=27)
+    ths = TemperatureHumidity(pin=27, sleep=5)
 
     zombie_mode, debug_mode = parse_flags()
     if debug_mode:
@@ -43,12 +44,14 @@ def main():
         brain = Brain(tracks, sonar, light, ths)
 
     brain.run()
+    monitoring = Monitoring(9100, light, sonar, ths)
     while True:
         key = input()
         if zombie_mode:
             brain.on_command(key)
         if key == "e":
             break
+    monitoring.close()
     brain.die()
     GPIO.cleanup()
 
